@@ -1,21 +1,24 @@
 <template>
-  <div class="menubox" style="border-right: 2px solid #dddddd">
+  <div class="menubox" style="border-right: 2px solid #dddddd; overflow: hidden">
     <!--菜单顶部栏-->
-    <div style="text-align: right; border-bottom: 1px solid #dddddd; display: flex; flex-direction: row-reverse">
-      <i
-        :class="isCollapse ? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'"
-        class="collapse"
-        style="display: inline-block"
-        @click="handleCollapse()"
-      ></i>
-
-      <transition name="func">
-        <div v-show="!isCollapse" style="height: 100%; width: 80%">
-          <i class="el-icon-refresh collapse" style="display: inline-block" @click="refreshList"></i>
-        </div>
-      </transition>
+    <div class="funcmenu" style="">
+      <div style="height: 100%; margin-left: 5px">
+        <i
+          :class="isCollapse ? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'"
+          class="collapse"
+          style="display: inline-block"
+          @click="handleCollapse()"
+        ></i>
+      </div>
+      <div v-show="!isCollapse" style="height: 100%; margin-left: 5px">
+        <i class="el-icon-refresh collapse" style="display: inline-block" @click="refreshList"></i>
+      </div>
+      <div v-show="!isCollapse" style="height: 100%; margin-left: auto">
+        <i class="el-icon-plus collapse" style="display: inline-block" @click="newProj"></i>
+      </div>
     </div>
-    <!--菜单主要活动内容区域-->
+
+    <!--项目列表和组件栏区域-->
 
     <div style="height: 100px; background-color: #ffffff">
       <ProjectList ref="projectlist" :visible="!isCollapse" @refresh="refreshList"></ProjectList>
@@ -56,10 +59,23 @@ export default {
     ondragStart(copyDom) {
       this.$emit('ondragStart', copyDom)
     },
+
+    /**
+     * TODO:在根目录下,新增项目
+     */
+    newProj() {
+      this.$refs['projectlist'].handleCreateProj()
+    },
   },
 }
 </script>
 <style scoped>
+.funcmenu {
+  text-align: center;
+  border-bottom: 1px solid #dddddd;
+  display: flex;
+  flex-direction: row-reverse;
+}
 .menubox {
   display: flex;
   height: 100%;

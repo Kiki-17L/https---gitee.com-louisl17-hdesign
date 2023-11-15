@@ -1,17 +1,20 @@
 <template>
   <div id="menu1" class="menubox" style="border-right: 2px solid #dddddd">
-    <!--菜单顶部栏-->
-    <div style="text-align: right; border-bottom: 1px solid #dddddd; display: flex; flex-direction: row-reverse">
-      <i :class="isCollapse ? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'" class="collapse" style="display: inline-block" @click="isCollapse = !isCollapse"></i>
-
-      <transition name="func">
-        <div v-show="!isCollapse" style="height: 100%; width: 80%">
-          <i class="el-icon-refresh collapse" style="display: inline-block" @click="refreshList"></i>
-        </div>
-      </transition>
+    <!--顶部功能栏-->
+    <div style="text-align: center; border-bottom: 1px solid #dddddd; display: flex; flex-direction: row-reverse">
+      <div style="height: 100%">
+        <i
+          :class="isCollapse ? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'"
+          class="collapse"
+          style="display: inline-block"
+          @click="isCollapse = !isCollapse"
+        ></i>
+      </div>
+      <div v-show="!isCollapse" style="height: 100%; margin-right: 5px; margin-left: auto">
+        <i class="el-icon-refresh collapse" style="display: inline-block" @click="refreshList"></i>
+      </div>
     </div>
-    <!--菜单主要活动内容区域-->
-
+    <!--数据源列表区域-->
     <div style="height: 100px; background-color: #ffffff">
       <SourceList ref="sourcelist" :visible="!isCollapse"></SourceList>
     </div>

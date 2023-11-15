@@ -19,9 +19,8 @@
         <div style="float: right">
           <label>数据预览：</label>
           <input v-model="dataPreviewCount" style="width: 40px" />
-          <input type="hidden" v-model="hiddenValue" value="10" />
-          <a href="#" class="l-btn" @click="executeSQL">执行</a>
-          <a href="javascript:void(0)" class="l-btn" @click="saveSQL">{{ saveButtonLabel }}</a>
+          <el-button style="margin-left: 10px" type="text" icon="el-icon-s-promotion" @click="preview" :loading="isCompleted">执行</el-button>
+          <el-button type="text" icon="el-icon-check" @click="saveWorkTable">保存</el-button>
         </div>
       </div>
 
@@ -41,26 +40,10 @@
       <div class="panel-header" style="width: 1000px">
         <div class="panel-title">数据</div>
       </div>
-      <div class="datagrid-wrap panel-body" title style="width: 890px; height: 200px">
-        <table>
-          <thead></thead>
-          <tbody>
-            <tr v-for="(item, index) in dataFromServer" :key="index">
-              <td>{{ index + 1 }}</td>
-              <!-- 显示序号 -->
-              <td>{{ item.field1 }}</td>
-              <!-- 显示字段1的值 -->
-              <td>{{ item.field2 }}</td>
-              <!-- 显示字段2的值 -->
-              <td>{{ item.field3 }}</td>
-              <!-- 显示字段3的值 -->
-              <td>{{ item.field4 }}</td>
-              <!-- 显示字段4的值 -->
-
-              <!-- 添加更多字段 -->
-            </tr>
-          </tbody>
-        </table>
+      <div class="datagrid-wrap panel-body" title style="width: 890px; height: 200px; overflow-x: auto">
+        <el-table v-if="isCompleted" :data="tableData" border style="width: 100%">
+          <el-table-column v-for="(field, index) in tableData" :prop="field.name" :label="field.name" width="180" :key="index"> </el-table-column>
+        </el-table>
       </div>
 
       <div class="datagrid-pager paginaition">
@@ -103,7 +86,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
   data() {
     return {
@@ -125,31 +107,32 @@ export default {
       //根据按钮状态返回不同的标签
       return this.isEditMore ? '修改' : '保存'
     },
+    isCompleted() {
+      return false
+    },
   },
   mounted() {
-    let node = JSON.parse(this.$route.params.id)
     let ds = JSON.parse(this.$route.params.ds)
+    let table = JSON.parse(this.$route.params.table)
     this.dataSourceName = ds.label
-    this.kpiViewName = node.label
-    this.inputValue = 'Select * From ' + '[' + node.label + ']'
-  },
-  destroyed() {
-    console.log('组件销毁')
+    this.inputValue = 'Select * From ' + table.label
   },
   watch: {
     $route: {
       handler() {
-        let node = JSON.parse(this.$route.params.id)
         let ds = JSON.parse(this.$route.params.ds)
+        console.log(ds)
+        let table = JSON.parse(this.$route.params.table)
         this.dataSourceName = ds.label
-        this.kpiViewName = node.label
-        this.inputValue = 'Select * From ' + '[' + node.label + ']'
+        this.inputValue = 'Select * From ' + table.label
       },
       deep: true,
     },
   },
 
   methods: {
+    preview() {},
+    saveWorkTable() {},
     nextPage() {
       if (this.currentPage < this.totalPage) {
         this.currentPage++
@@ -164,42 +147,6 @@ export default {
       if (event.key == 'Enter') {
         //插入换行符
         this.inputValue += '\n'
-      }
-    },
-
-    async executeSQL() {
-      try {
-        const response = await axios.post('/execute-sql', {
-          sqlQuery: this.inputValue,
-        })
-
-        // 假设服务器返回的数据在 response.data 中
-        this.dataFromServer = response.data // 将数据存储到 dataFromServer
-      } catch (error) {
-        console.error('执行 SQL 出错:', error)
-        // 处理错误情况
-      }
-    },
-
-    async saveSQL() {
-      if (this.kpiViewName == '') {
-        alert('请输入业务视图名称！')
-      } else {
-        try {
-          // 发送 SQL 保存请求到服务器
-          const response = await axios.post('/save-sql', {
-            //发送post请求到服务器的'/save-sql'
-            sqlQuery: this.inputValue, // 从前端获取 SQL 语句
-            kpiViewName: this.kpiViewName, // 也可以将业务视图名称一并发送到服务器
-          })
-
-          console.log('SQL 已成功保存到服务器！')
-          alert('保存成功！')
-        } catch (error) {
-          console.error('保存 SQL 出错:', error)
-          // 处理错误情况
-          alert('保存失败 ！')
-        }
       }
     },
   },

@@ -102,3 +102,15 @@ export function deleteViewByID(viewid, user) {
     },
   })
 }
+
+//执行sql语句
+export function runSql(dsid, sqlwords) {
+  return httpUtil({
+    url: '/database/executionSQL',
+    method: 'post',
+    params: {
+      dsid,
+      sqlwords,
+    },
+  })
+}
